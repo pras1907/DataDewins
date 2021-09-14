@@ -1,4 +1,4 @@
-**Aim of the MINI PROJECT:**
+**Aim of the MINI PROJECT:
 
 Create a MakeFile with 4 Targets:
 This Makefile helps a PHP development team have a consistent development                 
