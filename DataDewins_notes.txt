@@ -1,0 +1,872 @@
+June 4th, 2021
+
+85% of smartphones are based on linux. Top 500 supercomputers work on Linux.
+Kernel processes commands by user through the shell. 
+Terminals are software which emulates CLI
+
+Options for running command:
+ls for list command
+-lah means list long form
+/tmp means temp directory
+
+Finding Help:
+man pages and info are the help systems available.
+man for manual pages.
+man-db Debian package provides man commands.
+manpags-dev Debian package provides system manual.
+
+Man pages have 9 parts.
+1. Executable program 2. System calls 3. Library files 4. Special files 5. File formats and conventions.
+6. Games 7. Miscellaneous 8. Systtem administraton commands. Kernel routines(Non Standard)
+
+man pages have certain sections
+CONVENTIONAL NOT NECCESSARY
+AUTHORS		BUGS		CONFIGURATION	CONFORMING TO
+DESCRIPTIONS	ENVIRONMENT	ERROR		EXAMPLE
+EXIT STATUS	FILES		NAME		NOTES
+OPTIONS		RETURN VALUE	SEE ALSO	SYNOPSIS
+VERSIONS
+(ALL MAY BE AND MAY NOT BE PRESENT)
+Command to display sections: $ man man | grev -v '^' | grep -v '^$'
+
+USEFUL MAN COMMANDS:
+search on keyword:
+$ man -k xargs
+xrags(1) - build and execte comand lines from standar...
+shows
+command name: xargs
+man secton: 1
+short intro: build and execute command lines from standar...
+
+June 05, 2021
+
+User management:
+Create a user and then we can
+change psswrd
+lock unlock
+chnge a grp member
+and also delete the user
+/etc/passwd: primary user info, excep password
+/etc/shadow: salted psswrd (saltes password means it means it will show not whole password, it will show hashed passwords
+and also passwors with prefix and suffixes.
+/etc/groups: system groups and membership information. 
+
+/etc/passwd contains:(can also be used by man 5 passwd)
+user name, masked password, user id, primary group id etc...
+
+shadow file contains: (* says there is no password) (! means deleted password for the user)
+login name, salted password, date of last passwrd change, min and max password age
+password warning period, password insctivity period, account expiry date, reserved field
+shadow can be readable by root only.
+
+password nahi hash value store hoti hai.
+grep for pattern matching, aage ke weeks me pdhaya jayega.
+
+Useful commands:
+passwd: change password
+id: get uid, gid and supplimentary groups
+getent: get entries from nsswitch libraries.
+(grep and getent se same information)
+
+To login with new user: 
+su- new user name
+then password dalo
+ps -u gives process command which are running currently.
+
+Root user:
+special user having user ID 0.
+has unrestricted accss to filesystem 
+is used to administer the system
+it can:
+	change ownership and permissions
+	manage installed software packages
+	manage system services
+	can run programs on priviledged port (<1024)
+rights can be delegated with sudo.
+su require password
+but sudo doesn't require password.
+
+setuid and setgid:
+configured by chmod command on executables.
+allows priviledge elevation to specific program
+
+chgrp changes group ownership of file(s)
+usermod command updates group membership.
+clear for clearing the screen.
+Que: How did we get user id and group id?
+Answer: By id command.
+
+June 06, 2021
+
+How to mark attendance: ctrl+b 1 then sudo mark-my-attendence.
+Exit that screen by using Ctrl+b 0.
+
+Now session starts:
+
+Files and Processes:
+Computing is all about processing data.
+File=Metadata + Data
+metadata: Info about the file and data: Content of the file.
+
+for each file metadata is stored in i-node. Data is stored in data blocks.
+
+File System:
+Stores Multiple files.
+Created on partition or disk.
+Can be imagined as:
+iiiiiiiiiiiiiiiiiii
+iiiiiiiiiiiiiiiiiii
+ddddddddddddddddddd
+ddddddddddddddddddd
+ddddddddddddddddddd
+ddddddddddddddddddd
+ddddddddddddddddddd
+
+each is represents an i-node
+each d represents a data block.
+
+Disk PArtition scheme and partition:
+Dis+ Partition table+Partitions.
+
+Create partition on disk using disk partitioning schemes (are of types: MSDOS, GPT etc.)
+Disk as one partiton table and then partitions P1 P2 P3...
+MSDOS HAVE 4 PARTITIOINS
+GPT have 128 partitions.
+
+Disk Management Commands:
+lsblk- list disks or block devices
+blkid- list volumes/partitions
+fdisk- partition disk (be careful it can delete OS)
+mkfs.ext4: create EXT4 filesystem.
+
+Filesystem physical layout:
+Supernlock- Into about i node bit map and data block bitmap
+i node bitmap
+i node
+data block bit map
+data blocks
+
+(NTFS is used in windows, ext4 file system in Linux)
+DIRENT: File name + i-node number + type
+Special directory file /
+Two special dirents:
+.- CUrrent directory
+..-Parent directory.
+
+Work to do:
+Use list directories by
+$ ls -ldi / /. /.. /home/. /home/..
+
+(to know present directory we user pwd command)
+
+TYPES OF FILES:
+
+Regular file: files containing user created data on disk
+Directory files: file containing dirents
+links: symbolic links
+FIFO: special in memory files
+socket: network connections
+block device: hardware devices operating in block mode
+character dev.: hardware devices operating in character mode
+(ls -l file_name gives file information and type.
+(stat for information of file)
+
+i-node content:
+file type
+block used (512 byte sized)
+link count
+access permission (user, group, other, sticky, uid, sgid)
+user owner id
+group owner id
+access time stamp
+modify time stamp
+change time stamp
+IN-ACCESSIBLE
+direct data block addeess
+single indirect data block adress
+double indirect data block address
+tripple indirect data block address.
+(to make a directory we use mkdir)
+
+June 10, 2021
+
+FILE OWNERSHIP AND PERMISSION:
+Each file is
+	owned by s user (UID in stat output)
+	owned by a grpup (GID in stat output)
+Each file has first three bits are read(4), write(2) and exexcute(1) for
+user, group, and others
+Additional permission bits are:
+4-setuid (execute as a user),
+2-setgid (execute as a group)(default group is directory group),
+1-stciky(retain text in swap) (only user or root can remove files)
+in form of 
+u/g/o	r	w	x
+0	0	0	0
+1 	0	0	1
+2	0	1	0
+3	0	1	1
+4	1	0	0
+5	1	0	1
+6	1	1	0
+7	1	1	1
+(o=permission revoked and 1 for permission granted)
+(command is chmod)
+Example: chmod 2754 temp/test
+(2 means setgid i.e. execute as a group, 7 means user have rwx, 5 means group has rx, 5 means owner has r)
+
+Soft and Hard Links:
+(Link means names by a file is known)
+Hard: Create another dirent for existing file
+Soft: Create file of a link type
+Hard Link:
+another name for existing file
+can only link to file in same file system
+increases link count in i-node
+Soft Link:
+can point to no-existing target file
+can link file on any file system
+creates another i-node for soft link.
+soft link by ln -s command; hard link by ln command.
+
+Storage in data blocks:
+Address of few data blocks is stored in i-node
+direct blocks (db)
+Address of more data blocks are stored indirectly in
+single indirect block (sib)
+double indirect block (dib)
+triple indirect block (tib)
+
+adb: data block repurposed to store addresses of other data blocks.
+
+Numerical Ex- 8 db, 1 sib, 1 dib, 1 dib, size of each disk block 128 bytes.
+Max file size possible?
+by 	db- 8x128
+	sib-1x128x16
+	dib- 16x16x128x1
+	tib- 16x1x16x16x128
+
+Named pipe/FIFO:
+Special file without data blocks
+Allows I/O redirection among unrelated processes.
+
+June 11, 2021
+
+Package management:
+mount for mounting a partiition in the disk.
+unmount for unmounting.
+Paclage is a application software.
+default configurations 
+documentation.
+Packaged by developers of distributors or distributions
+
+Frequent operations are:
+apt install: Installation snd upgrade to the latest version
+apt remove:
+remove a package, leaving configurations
+apt reinstall: again install a existing/ removed package
+apt purge: remove package with configurations {clean plate}
+apt upgrade: upgrade all installed packed to the latest.
+
+Source or repositories: (From where we know what to do/update/install)
+
+apt search: search a package in package index
+apt update: update package index
+apt clean: delete extra files from the cache
+apt autoremove: delete unused packages
+apt-cache policy: identify package source
+
+dpkg -L List all the contents
+
+Sources or source repositories:
+Source files: 
+- avaliable in etc/apt/source.list.d/ directory
+contains mirror informations to fetch packages.
+provided by- independent user to....
+
+Input, Output and Error.
+processes:
+read input, write output.
+have 3 standar streams, available by default:
+STDIN: read buffered input from
+STDOUT: write buffered output to
+STDERR: write un-buffered errors to
+
+Buffering: 
+collect data from multiple opreations before performing I/O
+
+I/O Redirection and Pipelining:
+by default
+STDIN connects to keyboard input
+STDOUT and STDERR connect ot display
+
+Redirection: 
+allows STDIN, STDOUT, STDERR, streams to connect files:
+< : STDIN redirection
+> : STDOUT redirection with truncate
+>>: STDOUT redirection with append
+2>: STDERR redirection
+Examples:
+	$ cat < infile > outfile 2> errorfile
+	$ cat < infile >> outfile
+Pipeline: connects STDOUT of one process into STDIN of another.
+
+June 12, 2021
+
+coreutils: provides basic file, shell and text manipulation utilites
+{ use ctrl+b [ for moving upward in content and ] for downward}
+coreutils comes from gnu project.
+we can:
+Install files in two locations /bin and /usr/bin directories.
+provided by coreutils package
+available on all gnu resources.
+
+/bin utils from Debian (Buster):
+it contains executables required for:
+emergency repairs
+booting
+
+File and directory operations:
+pwd: present working directory
+ls/dir/vdir: List direectory (Find how ls dir and vdir are different)
+mkdir: Make directory
+touch: create empty file or udate timepass
+cp: copy file contents to another file
+
+ln: create link
+readlink: print resolved symbolic link
+mv: move a file
+rm: Remove a file
+rmdir: remove a directory
+
+mktemp: used to creare a temporary file
+mknod: Make a node in file system (Device or FIFO)
+
+Permissions:
+chmod, chown, chgrp
+Miscellaneous:
+df: disk free
+
+cat: concatenate file
+dd: Convert and copy a file
+sync: Synchronize cached writes to storage.
+
+uname: Print system information
+date: Print or set system date and time
+echo: Display a line of text
+sleep: Delay for a specified amount of time
+stty: Print or chane terminal line settings
+{Example: sleep 3; echo "hello" will print "hello but after 3 seconds.}
+
+/usr/bin utils from Debian
+head: output the first files of line i.e. by default top 10
+tail: output the last part of file
+tac: Concatenate file in reverse.
+sort/ tsort: Sort lines of text files/ sort topologically
+wc: Print newline, word and byte counts for files
+uniq: Report or ommit repeated lines.
+
+cut: Removes sections of text from each line of file
+paste: Merge lines of files
+join: Join lines of two files on a common field
+fold: Wrap each input line to fit in a specified width
+spilt: Split a file into pieces
+csplit: Split a file into sections by contect.
+
+expand/ unexpand: Converts tabs into spaces/ spaces into tabs
+tr: Translat or delete characters
+shuf: Generate random permutations
+fmt: Simple optimal text formatter
+numfmt: Convert number from/ to human-readable strings
+nl: Number line of files
+od: Octal dump: Octal representation of all the numbers of the file
+ptx: Produce a permuted index of file contents
+comm: Compare two sorted files line by line
+{A command related to comm is diff also to compare line by line
+diff is context based difference and unsorted while a sorted file is used in comm}
+
+encoding and checksum commands:
+
+base64: Encode data/decode base64 strings
+
+sum: Checksum and block counts for each file
+cksum: Checksum count bytes for each file
+md5sum: Compute and check MD5 message digests
+sha*sum
+sha1/224/256/384/512sum: Compute and check SHA1/224/256/284/512 messag digest
+
+test: Check file stypes and compare values
+stat: Display file or filesystem status
+du: Estimate file space usage (Disk usage)
+basename: Strip directory and suffix from filenames
+pathchk: Check filenames for validity and portability
+realpath: Print resolved path
+dirname: Strip last component from filename.
+
+install: Copy files and set attributes
+link: Call link function to create a link to file
+unlink: Call unlink function
+mkfifo: Somewhat same as mknode
+
+Process related commands:
+nice: Run program with modified scheduling priorities
+nohup: Run program immune to hangup signals
+nproc: Print number of processing units available
+tee: Read STDIN  and write to STDOUT file
+timeout: Run command with a time limit.
+
+User related commands:
+id: Prints real and effective UID and GIDs
+who: Show who is logged on
+whoami: Show your info
+
+Misc:
+hostid: Print numeric identifier for current host
+seq: Print a sequence of numbers
+yes: Output a string repeatedly until killed
+printf: To print
+
+{clear command for clearing the screen}
+
+Meeting notes: {June 16, 2021}
+1. Create an asana profile.
+2. Make notes and do it in group tasks.
+3. AWS educate account set-up karlo.
+
+June 17, 2021
+
+Result day, no notes.
+
+June 18, 2021
+
+Bash:
+
+ https://tldp.org/LDP/Bash-Beginners-Guide/html/                                                                            
+ Command interpreter                                                 │       Bash is an sh-compatible command  language  interpreter  that
+  +- interprets user command into computer code                      │       executes  commands  read  from  the  standard input or from a  
+  +- provides invironemnt to the user (ENV VARS)                     │       file.  Bash also incorporates useful features from  the  Korn  
+  +- provides                                                        │       and C shells (ksh and csh).                                    
+  |   +- built-ins (commands which are part of the shell)            │                                                                      
+  |   +- user/ programming environment                               │       Bash  is  intended  to  be a conformant implementation of the  
+  |   +- intercative and non-interactive execution                   │       Shell and Utilities portion of the IEEE  POSIX  specification.
+  |   +- I/O redirection and pipelining                              │       (IEEE  Standard 1003.1).  Bash can be configured to be POSIX- 
+  |   +- process management                                                  conformant by default.
+  +- helps running external commands (not part of shell)
+
+How to know where is bash located? Type 'which bash'command and then enter
+(/etc command is for arguments)
+To know who is built in or not. use type command.
+as: 	type echo gives 'echo is a shell builtin'
+	type ls will give 'lis is /usr/bin/ls'
+
+Startup:
+Startup files:
+	Interactive login shell (--login)
+		/etc/profile
+		first readnle file among
+			~/.bash_profile
+			~/.bash_login
+			~/.profile
+		~/.bash_logout (on logout)
+	Interactive non-login shell
+		/.bashrc
+
+Command execution
+
+Builtin
+	Bourne shell builtins
+	Bash builtins
+	POSIX builtins
+
+External commands
+	Stored in filesystem
+
+fork + exec
+fork: Create a new process that is exactly same as the parent process.
+exec: Change the process code.
+
+Subshell/Subprocess:
+	each interactive command is started in new subshell.
+	script creates a subshell and each command gets a parent child
+
+Script execution:
+	Read
+	Tokenize
+	Parse
+	Expand
+	Redirections
+	Execute
+	Reap
+
+Script Terminology:
+
+variable declare NAME
+
+│saloni_jain@ip-172-31-32-207:~$ echo a 
+|a
+Assignment and echo assigned value:
+│saloni_jain@ip-172-31-32-207:~$ a=10
+│saloni_jain@ip-172-31-32-207:~$ echo $a
+│10
+
+Input: To take input from user use read varname;
+
+if...fi		if [c1]; then A1; fi
+| C1 conditional 1
+| action/ action set 1
+
+Start program with #!/bin/bash
+Save file with filename.sh (.sh extension) Ex: script1.sh
+CTRL 0 for saving program
+Exit: CTRL x
+To run program: After exit run bash script1.sh 
+{ To give a command function use it with $(command name) or use a backtick as `command_name` }
+A default varibale name is REPLY
+EX: saloni_jain@ip-172-31-32-207:~/temp/bash_script$ read; echo $REPLY
+    tina
+    tina
+$0 for name of the script
+$ $2 $3 all for input
+(Use hashtags # for comments)
+give an array as varname=("$@")
+print that array as echo $a
+print a specific element of that array as echo ${Name[1]} (Prints 1st index element)
+To count number of elements in an array use $#
+
+Arithemetic Operators:
+v1= 10
+v2= 4
+r=$[ $v1+$v2]; echo $r
+This will print 14
+Same as substract, multiplication, division, modulas
+You can use (( $v1+$v2)) too in place of square brackets.
+
+ Create and Run a bash script:
+
+ $ echo 'ls' > /tmp/my_ls.sh   
+	  +- /tmp/my_ls.sh : full path to script 
+
+ Execution method: 1 
+ $ bash /tmp/my_ls.sh    
+(Explicitily invokes the shell and script runs, instance of bash starts and after running, the shell dies and returns a subshell...environment gets deleted)
+ Execution method: 2  
+ $ chmod +x /tmp/my_ls.sh; /tmp/my_ls.sh  
+(To give exexcutable permission to the file)(Environment again gets deleted, environment changes get lost)
+ Execution method: 3  
+ $ chmod +x /tmp/my_ls.sh; cd /tmp; ./my_ls.sh 
+(. command as . ./scriptname it takes file name as an argument and cuses your current shell to read and execute commands in it)
+(Any chnages to current environment will remain ever after the work is done, only read permission is required, no executable required) 
+Execution method: 4 
+$ chmod +x /tmp/my_ls.sh; export PATH=/tmp:$PATH; my_ls.sh 
+ {Do not add /tmp to PATH in real life}
+
+June 19, 2021
+
+For greater than we use gt, gretaer than equal to ge
+less than = lt, less than equal to = le
+as v1=8
+v2=10
+if [ "$v1" -gt "$v2" ]; then echo "yes"; fi
+this gives results as yes
+{exit from if condition using fi}
+
+For loop: {Example syntax}
+for i in 1 2 3
+do
+	echo $i
+done
+gives output as 1
+		2
+		3
+For range we need to give: for i in {1..10..2}i.e.{start..end..steps}
+We can also run commands as ls and date in loops as for i in ls pwd date
+Give for loop conditions in double round bracket as for ((i=1; i<5; i++))
+
+Other loops are while and until
+
+Break and continue are also used normally
+
+Functions can be used as
+|  function f() { echo $NAME }; f  
+
+Arrays and associative arrays as fruit=('Banana' 'Peach' 'Orange')
+echo "${fruit[@]}"
+echo "${fruit[1]}" 
+
+June 23, 2021
+
+Case statements
+
+Process: Programs in the execution (Almost enything which is not a file, is a process)
+
+Shell is the process we interact with.
+ Running eitors, web browsers are also processes.
+ 
+init and systemd
+
+init 
+....
+  is initial process
+  is started during the boot
+  creates other main processes in a process tree
+  Ususally has a process ID 1
+  ( swapper or sched has process ID 0 and is responsible for pagin, and is actually part of the kernel rather than normal user-mode process .)
+  init is the anscestors of all the processes in this system.
+
+systemd is modern init system
+{ try pstree -p on console)
+
+Buffering is collecting data from multiple operations before performing I/O
+
+Process table and file descriptor tables
+
+Process table
+  array of Process ID and Process Control Block tuples
+
+PCB consists of:
+Process ID, Parent process ID, process group ID, instruction pointer, Memory maps, Open file descriptors -> File descriptor table, Priority and scheduling information,
+Resource counters and much more.
+
+File descriptor table:
+
+Global file descriptor table (GFDT)
+It contains:
+ in-core, inode for each opened file
+ reference count for each file from PCB file descriptor table
+
+FDT1			| GFDT
+FD3:R=100, W=100:GFDT(1)| 1: fileX (2)
+FD4:R=50, W=50:GFDT(2)  | 2: fileY (1)
+    			| 3: fileZ (1)
+FDT2			|
+FD3:R=100, W=100:GFDT(3)|
+FD4:R=50, W=50:GFDT(1)  |
+
+Process creation: fork()/ exec()
+
+Process create childrem using fork() library call
+A process changesprogram text using exec library call
+Certain customizations happen between fork and exec
+	 open / close / duplicate FDs
+	 open / close duplicate pipes fds
+	 tweak environment vairable, etc.
+
+Simplified explanation for ls | sort
+
+shell creates piple (|)
+shell forks two processes
+Both processes now share the pipe
+First process
+	closes STDOUT file descriptor
+	duplicates pipe's.....(Chhoooot gaya)
+
+Process states:
+D= Uninterruptable sleep (Process aisi so gayi hai ki uthegi hi nahi kisi bhi external signal se na hi interrupt hoga, na hi execute hoga)
+I= Idle (Wait kr rha hai resources a liye)
+R= Running
+S= Sleeping
+T= stopped by job control signal.
+t= stopped by debugger during trace
+Z= zombie ( parent die but child returns a value in PCB but parent hai nahi to kaha jayegi value to process kisi aur process ko apn aparent bana leta hai!)
+
+
+June 25, 2021
+
+ps: Report snapshot of current processes
+pstree: Display tree of processes
+
+ps:
+
+ USER     : Owner of the process (Effective user)
+ PID      : Process ID  
+ %CPU     : cputime/ realtime ratio 
+ %MEM     : Process's resident set size to phys. mem. ratio    
+ VSZ      : Virtual memory size on KiB (1024 byte units)     
+ RSS      : Resident Set Size (non-swapped phys. mem. in KiB) 
+ TTY      : Controlling Terminal      
+ STAT     : Process State code  
+ START    : time when command started                    
+ TIME     : accumulated cpu time (user + system)                     
+ COMMAND  : executable name 
+
+Process state codes:
+(You can see it in man ps)
+D I R S T t W X Z: Already defind above
+
+For BSD formats and when the stat keyword is used, additional characters may be displayed:
+<: high priority (not nice to other users)
+N: low priority (nice to other users)
+L: has pages locked into memory (for real-time and custom IO)
+s: is a session leader
+l: is multi thread
++: is a foreground process
+
+top command: Visualises real time view
+(See summary display under OVERVIEW in man top)
+top:
+ +- uptime       : length of time since last boot 
+ +- users        : total number of users with actice processes
+ +- load average : system load average over last 1, 5, 15 minutes  
+tasks:
+ +- total        : count of tasks/ threads in any state 
+ +- running      : count of tasks/ threads in run state   
+ +- sleeping     : count of tasks/ threads in sleep state   
+ +- stopped      : count of tasks/ threads in stop state  
++- zombie       : count of tasks/ threads in zombie state 
+
+Packages in debian:
+ +- procps : ps, top, free 
+ +- psmisc : pstree   
+ +- htop   : htop 
+ +- lsof   : lsof    
+$sudo apt install procps psmisc htop lsof
+
+(argument $0 returns Name of the script)
+(export command is used to make a variable available for every subshell)
+
+June 26, 2021
+
+Inter process communication:
+System V IPC
+ +- Message queues 
+|  Place message on queue to be read by other processes 
+|  lib calls: msgget, msgsend, msgrcv, msgctl 
++- Semaphore sets  
+|  Synchronize actions across processes 
+|  lib calls: semget, semop, semctl 
++- Shared memory segments 
+|  Share regions of memory across processes 
+|  lib calls: shmget, shmat, shmdt, shmctl 
++- commands: ipcmk  ipcrm  ipcs
+
+Signals:
+command: kill(1), lib call: kill(2)
+
+FIFO/ named pipes
+Sockets;
+Single system: UNIX domain sockets
+Multiple systems: TCP  UDP sockets, other
+
+Message queues:
+
+Common usage patterns:
+create a queue
+share queue identifier across processes
+write messages to the queues from one process
+read messages from queue in same or another process
+ipcmk can be used to create a messages queue from shell
+man (7) mq_overview for details
+
+Semaphore sets:
+
+Common usage pattern:
+Create a new semaphore set
+decrement value by one, wait if value goes negative
+begin work, finish work
+increment semaphore
+
+Share memory segments:
+
+Common usage patterns:
+creates a shared memory segment
+attach to new/existing segments
+write to/ read from the segment
+(optionally) synchronize ith other processes using semaphores
+ipcmk can be used to create a message queue from shell
+
+Signals:
+asynchronous notifications among process
+handled with-in process by signal handlers
+some innterrupts are passed as signals to rpocesses
+signals have default actions, which can be over-ridden
+some signals can be maskes
+normally sent by kernel to processes
+user defined conditions are also supported
+programming languages can also be accessed
+
+FIFO/ named pipes:
+    +- these are special files without data blocks  
+    +- provides bi-directional half-duplex data transfer  
+    +- unrelated processes can use FIFO for communication 
+    +- communication processes should be on same host 
+    +- FIFO file names persist across host restarts  
+    +- FIFO data does not persist across host restarts 
+
+Sockets:
+    +- enables communication on same host 
+    +- enables bi-directional full-duplex communication 
+    +- provides kernel verified user/ group authentication 
+    +- allows passing file-descriptors across processes 
+    +- supports packet oriented and stream oriented communication  
+TCP sockets are stream oriented communication, full duplex communication, no imbedded authentication support.
+UDP sockets are packet oriented communication, full duplex communication but unrelaible, no imbedded authentication support.
+
+July 01, 2021
+
+Kernel Space
++-Kernel processes'+-Buffers and cache
+| dirent cache
+| i-node cache
+| block cache
+| i/o buffers
++- and some more usage
+
+User space
++-code or text
++-heap
++-stack
+
+process adress space: Virtual address space that gets mapped to physical addresses.
+
+Opening files for read\write
+user process request file open
+kernel
+	+- converts file name to i-node with directory lookups 
+	+- loads i-node in memory
+	+- periodically syncs modified i-node and data blocks 
+	+- loads reqested data blocks in RAM  
+	+- creates/ updates FDT and GFDT entries 
+	+- checks permissions for requested operation
+ 
+	+- caches dirent, i-node and data blocks in RAM 
+	+- caching is based on usage frequency 
+Commands: free, ps
+
+Memory:
+Physical memory- RAM
+Secondary memory: Hard disk
+Vrtual memory
+
+Memory allocations:
+Heap space: 
+grows upwards to higher address range
+by malloc()
+stack space:
+grows downwards to lower address range
+
+ 			Simplified view   
+
+    1 malloc(1000) 
+    2 malloc(2000) 
+    3 malloc(2000) 
+    4 function1() 
+    5 function2() 
+  
+    ......|.......|  misc addresses   
+     9000 | ccccc |  program code  
+    10000 | ccccc |                   
+    ..... | ..... |                
+    11000 | hhhhh |  malloc(1000)       
+    12000 | hhhhh |  malloc(2000) 
+    13000 | hhhhh |               
+    14000 | hhhhh |  malloc(2000) 
+    15000 | hhhhh |                
+    16000 | ..... |                 
+    ..... | fffff |  available virtual address range 
+    ..... | ..... |                   
+    98000 | sssss |  function2 
+    99000 | sssss |  function1
+
+System Call:
+Communication through user mode(application) and system mode(LINUX Kernel)
+Simple UNIX model.
