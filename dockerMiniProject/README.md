@@ -1,17 +1,11 @@
-```
-                                                                                                         │
-                          Mini Project                                               
-                          ............                                               
-                                                                                     │
-Here is a skeleton for a Makefile with 4 targets.                                        
+**Aim of the MINI PROJECT:**
+
+Create a MakeFile with 4 Targets:
 This Makefile helps a PHP development team have a consistent development                 
 environment. Fill in the commands for given rules such that conditions                   
-provided in comments are met.                                                            
-                                                                                     │
-Set default rule to be 'up'      
+provided in comments are met.
 
 
-                                                                                                         │
 prepare:                                                                                 │
 # install packages required for following rules                                      │
                                                                                      │
@@ -38,10 +32,4 @@ teardown:                                                                       
 # delete ~/docker/* for fresh start                                                  │
 # implicitly run 'down' rule's commands before teardown                              │
 # remove all packages installed in prepare steps                                     │
-                                                                                     │
-                                                                        
-```
-
-
-**Solution**
-[link](https://github.com/tushar5526/datadewins/tree/main/dockerMiniProject)
+                                                                                     
