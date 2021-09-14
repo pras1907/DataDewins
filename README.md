@@ -8,4 +8,7 @@ Team Members:
 # Pranjal Gupta
 ```
 
+# Mini Project Solution:
+[Solution link](https://github.com/pras1907/dataDewins/tree/master/dockerMiniProject)
+
 
